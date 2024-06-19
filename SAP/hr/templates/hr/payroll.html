@@ -1,0 +1,473 @@
+{% extends 'layouts/layout.html' %}
+{% block content %}
+<style>
+    #table_payroll_view {
+        border-collapse: collapse;
+     }
+     
+     /* And this to your table's `td` elements. */
+     #table_payroll_view td {
+        padding: 0; 
+        margin: 0;
+     }
+</style>
+{% comment %} <button class="btn btn-primary" id="btn_download_attendances">Download Attendances</button>
+<button class="btn btn-primary" id="btn_download_employees">Download Employees</button> {% endcomment %}
+{% comment %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://rawgit.com/unconditional/jquery-table2excel/master/src/jquery.table2excel.js"></script> {% endcomment %}
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+></script>
+<div class="card">
+    <div class="card-body">
+        {% comment %} <button class="btn btn-success" id="export_payroll_data">Export</button> {% endcomment %}
+
+        <h1 class="card-title">Payroll</h1>
+        <form action="/hr/payroll/" method="POST" id="form_search">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-3 col-sm-4">
+                    {{ form.date_year.label_tag }}
+                    {{ form.date_year }}
+                </div>
+                <div class="col-md-3 col-sm-4">
+                    {{ form.month_half.label_tag }}
+                    {{ form.month_half }}
+                </div>
+                <div class="col-md-3 col-sm-4 d-flex align-content-bottom">
+                    <button class="btn btn-primary" type="submit">Apply</button>
+
+                </div>
+            </div>
+
+        </form>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped" id="table_records">
+                <thead>
+                    <tr class="table-dark">
+                        <td>Position</td>
+                        <td>Employee ID</td>
+                        <td>Name</td>
+                        <td>Gross Pay</td>
+                        <td>Total Deductions</td>
+                        <td>Net Pay</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_view_details">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">View Payroll Details</h4>
+                <p><span class="td-employee_position"></span></b></p>
+            </div>
+            <div class="modal-body">
+                {% comment %} <h5></h5> {% endcomment %}
+                <div class="table-responsive" id="payroll_view">
+                    <table class="table table-bordered table-hover" id="table_payroll_view">
+                        <thead>
+                            <tr class="table-primary">
+                                <td colspan="5" style="text-align: center;">
+                                    <h5><b>ABIC REALTY CORPORATION</b></h5>
+                                    <span>Unit 508 5TH Campos Rueda Building, Urban Ave. Makati City</span>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr class="" style="text-align: center;">
+                                <td colspan="5">SEMI-MONTHLY PAYROLL</td>
+                            </tr>
+                            <tr class="">
+                                <td><b><span class="td-employee_id"></span></b></td>
+                                <td><b><span class="td-employee_name"></span></b></td>
+                                <td></td>
+                                <td></td>                                
+                                <td></td>
+                            </tr>
+                            <tr class="">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="" rowspan="2">
+                                <td></td>
+                                <td>Period Covered:</td>
+                                <td colspan="2"><span class="td-date_covered" id ="td-date_covered">October 1-15, 2023</span></td>
+                                <td></td>
+                            </tr>
+                            <tr class="">
+                                <td></td>
+                                <td>Payout:</td>
+                                <td><span class="td-date_payout" id="td-date_payout">10/20/2023</span></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="table-dark">
+                                <td></td>
+                                <td></td>
+                                <td><b>No.</b></td>
+                                <td><b>Amount</b></td>
+                                <td><b>Total</b></td>
+                            </tr>
+                            <tr>
+                                <td><b>Earnings </b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Basic Pay</td>
+                                <td><span class="td-num_present_days"></span></td>
+                                <td><span class="td-daily_pay"></span></td>
+                                <td><span class="td-basic_pay"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Overtime Pay</td>
+                                <td><span class="td-num_overtime_hr"></span></td>
+                                <td><span class="td-hourly_ot_pay"></span></td>
+                                <td><span class="td-overtime_pay"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Meal Allowance</td>
+                                <td><span class="td-num_present_days"></span></td>
+                                <td><span class="td-daily_ma"></span></td>
+                                <td><span class="td-meal_allowance"></span></td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td></td>
+                                <td>Adjustment(Sat and Sun. Work)</td>
+                                <td><span class="td-weekend_work_hr"></span></td>
+                                <td><span class="td-weekend_rate"></span></td>
+                                <td><span class="td-weekend_pay"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Perfect Attendance</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-additional_pay"></span></td>
+                            </tr>
+                            <tr class="table-secondary">
+                                <td colspan="4"><b>Gross Pay</b></td>
+                                <td><span class="td-gross_pay"></span></td>
+                            </tr>
+                            <tr>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><b>Deductions</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Tardiness</td>
+                                <td><span class="td-num_tardinesstime_min"></span></td>
+                                <td></td>
+                                <td><span class="td-tardiness_deduct"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Undertime Deduction</td>
+                                <td><span class="td-num_undertime_hr"></span></td>
+                                <td></td>
+                                <td><span class="td-undertime_deduct"></span></td>
+                            </tr>
+
+                            <tr>
+                                <td></td>
+                                <td>Leave w/o pay</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-leave_without_pay"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>SSS Contribution</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-sss_contrib"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Philhealth Contribution</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-philhealth_contrib"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Pag-ibig Contribution</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-pagibig_contrib"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Adjustment</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-adjustment"></span></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Income Tax</td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-income_tax"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><b>Total Deductions</b></td>
+                                <td></td>
+                                <td></td>
+                                <td><span class="td-total_deductions"></span></td>
+                            </tr>
+                            <tr class="table-secondary">
+                                <td colspan="4"><b>Net Pay</b></td>
+                                <td><span class="td-net_pay"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% comment %} <input type="button" id="btn_export_pdf" value="Export" /> {% endcomment %}
+                <button class="btn btn-success" type="button" id="btn_export_pdf">PDF</button>
+                <button class="btn btn-success" type="button" id="export_payroll_data">Excel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+		<!-- html2pdf CDN link -->
+
+		<script>
+			const button = document.getElementById('btn_export_pdf');
+
+			function generatePDF() {
+				const element = document.getElementById('payroll_view');
+				//html2pdf().from(element),.save();html2pdf
+                html2pdf(element, {
+                    scale: 0.5 // reduce the size by half
+                  }).save();
+			}
+
+			button.addEventListener('click', generatePDF);
+		</script>
+<script>
+    $(document).ready(function(event) {
+
+        $("#export_payroll_data").click(function(e) {
+            e.preventDefault();
+            console.log("fs")
+            $("#table_payroll_view").table2excel({
+                exclude: ".noExl",
+                name: "Worksheet Name",
+                filename: "SomeFile",
+                fileext: ".xlsx",
+                preserveColors: true
+
+            });
+        });
+        //{% comment %} payroll/delete/<int:id> {% endcomment %}
+
+        $("#table_records").on('click', '.btn_delete', function(event){
+            event.preventDefault()
+            var id = $(this).data('id')
+            $.ajax({
+                type: "GET",
+                url: `/hr/payroll/delete/${id}/`,
+                success: function(response) {
+                    console.log(response)
+                    records = response
+                    var form = $("#form_search");
+                    var formData = new FormData(form[0]);
+                    form_search(formData)
+
+                }
+            });
+        })
+        $("#table_records").on('click', '.btn_view_details', function(event) {
+            var employee_name = $(this).closest('tr').find('.employee_name').text()
+            var employee_id = $(this).closest('tr').find('.employee_id').text()
+            var employee_position = $(this).closest('tr').find('.employee_position').text()
+            var gross_pay = $(this).closest('tr').find('.gross_pay').text()
+            var total_deductions = $(this).closest('tr').find('.total_deductions').text()
+            var net_pay = $(this).closest('tr').find('.net_pay').text()
+
+
+            $(".td-gross_pay").text(gross_pay)
+            $(".td-total_deductions").text(total_deductions)
+            $(".td-net_pay").text(net_pay)
+            $(".td-employee_id").text(employee_id)
+            $(".td-employee_position").text(employee_position)
+            $(".td-employee_name").text(employee_name)
+
+
+            console.log("gross" +gross_pay)
+            var id = $(this).data('id')
+            console.log(id)
+            $.ajax({
+                type: "GET",
+                url: `/hr/payroll/fetch/${id}/`,
+                success: function(response) {
+                    console.log(response)
+                    records = response
+                    $("#modal_view_details").modal('show')
+                    $.each(records, function (key, record) {
+                        console.log(key,record)
+                        $(`.td-${key}`).text(record)
+                    });
+                }
+            });
+        })
+
+        const employees_table = new DataTable("#table_records", {
+            autoTableLayout: true,
+            // autoWidth: true,
+            ordering: false,
+            language: {
+                error: function(errors, settings, techNote, table) {
+                    // Display the error message
+                    console.log(errors);
+                }
+            },
+            columnDefs: [{
+                    className: 'employee_position',
+                    targets: [0]
+                },
+                {
+                    className: 'employee_id',
+                    targets: [1]
+                },
+                {
+                    className: 'employee_name',
+                    targets: [2]
+                },
+                {
+                    className: 'gross_pay',
+                    targets: [3]
+                },
+                {
+                    className: 'total_deductions',
+                    targets: [4]
+                },
+                {
+                    className: 'net_pay',
+                    targets: [5]
+                },
+            ],
+            createdRow: function(row, data, index) {
+                $(row).attr('data-id', data.id);
+            }
+        });
+        function form_search(formData){
+            employees_table.clear();
+            $.ajax({
+                type: "POST",
+                url: "/hr/payroll/",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    var records = response.records;
+                    var date_info = response.date_info
+                    $.each(date_info, function (index, value) { 
+                         $("#td-"+index).text(value)
+                    });
+                    console.log(date_info)
+                    employees_table.draw()
+                    $.each(records, function(id, record) {
+                        console.log(record)
+                        var gross_pay = (
+                            parseFloat(record.basic_pay) +
+                            parseFloat(record.overtime_pay) +
+                            parseFloat(record.meal_allowance) +
+                            parseFloat(record.additional_pay) +
+                            parseFloat(record.weekend_pay)
+                          ).toFixed(2);
+                          
+                          var total_deductions = (
+                            parseFloat(record.tardiness_deduct) +
+                            parseFloat(record.undertime_deduct) +
+                            parseFloat(record.leave_without_pay) +
+                            parseFloat(record.sss_contrib) +
+                            parseFloat(record.philhealth_contrib) +
+                            parseFloat(record.pagibig_contrib) +
+                            parseFloat(record.adjustment) +
+                            parseFloat(record.income_tax)
+                          ).toFixed(2);
+                        var net_pay = gross_pay - total_deductions
+                        employees_table.row.add([
+                                    record.employee__position,
+                                    record.employee__dv_user_id,
+                                    `${record.employee__last_name}, ${record.employee__first_name}`,
+                                    `${gross_pay}`,
+                                    `${total_deductions}`,
+                                    `${net_pay.toFixed(2)}`,
+                            `<button class="btn btn-success btn_view_details" type="button" data-id="${record.id}">View Details</button>
+                            <button class="btn btn-danger btn_delete" type="button" data-id="${record.id}">Delete</button>
+                            
+                            `
+                        ]).draw();
+                        
+                    });
+                }
+            });
+        }
+
+        $("#form_search").submit(function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var formData = new FormData(form[0]);
+            form_search(formData)
+        });
+        $("#form_search").trigger('submit');
+    });
+</script>
+
+{% endblock %}

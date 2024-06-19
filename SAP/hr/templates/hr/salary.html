@@ -1,0 +1,570 @@
+{% extends 'layouts/layout.html' %}
+{% block content %}
+{% comment %} <button class="btn btn-primary" id="btn_download_attendances">Download Attendances</button>
+<button class="btn btn-primary" id="btn_download_employees">Download Employees</button> {% endcomment %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">Salary </h1>
+        <form action="/hr/salary/" method="POST" id="form_search">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-3 col-sm-4">
+                    {{ form.date_year.label_tag }}
+                    {{ form.date_year }}
+                </div>
+                <div class="col-md-3 col-sm-4">
+                    {{ form.month_half.label_tag }}
+                    {{ form.month_half }}
+                </div>
+                <div class="col-md-3 col-sm-4 d-flex align-content-bottom">
+                    <button class="btn btn-primary" type="submit">Apply</button>
+
+                </div>
+            </div>
+
+        </form>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped" id="table_records">
+                <thead>
+                    <tr class="table-dark">
+                        <td>Employee ID</td>
+                        <td>Position</td>
+                        <td>Name</td>
+                        <td>Semi-monthly rate</td>
+                        <td>No. of Working Days</td>
+                        <td>Basic Pay</td>
+                        <td>Meal Allowance</td>
+                        <td>No. of Weekend Working Hours</td>
+                        <td>Weekend Pay</td>
+                        <td>No. of Overtime Hours</td>
+                        <td>Overtime Pay</td>
+                        <td>No. of Tardiness Minutes</td>
+                        <td>Tardiness Deduction</td>
+                        <td>No. of Undertime Hours</td>
+                        <td>Undertime Deduction</td>
+                        <td>Methods</td>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_submit_payroll">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Submit Payroll</h4>
+            </div>
+            <form action="" id="form_submit_payroll">
+                {% csrf_token %}
+                <input type="hidden" name="employee_id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <h5 class="modal-subtitle">Employee</h5>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Position</label>
+                                    <input type="text" class="form-control" name="employee_position" disabled>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="employee_name" disabled>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Semi-monthly Rate</label>
+                                    <input type="text" class="form-control" name="semimonthly_rate" id="semimonthly_rate" readonly>
+                                </div>
+                                <hr class="separator">
+                                <h5 class="modal-subtitle">Earnings</h5>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Basic Pay</label>
+                                    {{ submit_form.basic_pay }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Meal Allowance</label>
+                                    {{ submit_form.meal_allowance }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">No. of Days Present</label>
+                                    {{ submit_form.num_present_days }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Additional Pay (For Perfect Attendance)</label>
+                                    {{ submit_form.additional_pay }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label ">Overtime Pay</label>
+                                    {{ submit_form.overtime_pay }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">No. of Overtime Hours</label>
+                                    {{ submit_form.num_overtime_hr }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Weekend Pay</label>
+                                    {{ submit_form.weekend_pay }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">No. of Wekend Working Hours</label>
+                                    {{ submit_form.weekend_work_hr }}
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label for="" class="form-label">Gross Pay:</label>
+                                    <input type="text" name="gross_pay" class="form-control total_pay_deduc" id="gross_pay" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 ">
+                            <div class="row">
+                                <h5 class="modal-subtitle">Deductions</h5>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Tardiness Deductions</label>
+                                    {{ submit_form.tardiness_deduct }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">No. of Minutes of Tardiness </label>
+                                    {{ submit_form.num_tardinesstime_min }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Undertime Deductions </label>
+                                    {{ submit_form.undertime_deduct }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">No. of Undertime Hours </label>
+                                    {{ submit_form.num_undertime_hr }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label ">Leave Without Pay </label>
+                                    {{ submit_form.leave_without_pay }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label ">SSS Contribution </label>
+                                    {{ submit_form.sss_contrib }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label ">PhilHealth Contribution </label>
+                                    {{ submit_form.philhealth_contrib }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label ">Pag-ibig Contribution </label>
+                                    {{submit_form.pagibig_contrib }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label ">Adjustment</label>
+                                    {{ submit_form.adjustment }}
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="" class="form-label">Income Tax:</label>
+                                    {{ submit_form.income_tax }}
+                                    <!-- <input type="text" class="form-control deductions" name="income_tax" id="income_tax" readonly> -->
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label for="" class="form-label" disabled>Total Deductions:</label>
+                                    <input type="text" class="form-control total_pay_deduc" name="total_deductions"
+                                        id="total_deductions" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    <hr class="separator">
+                    <!-- <div class="form-group col-sm-3">
+                        <label for="" class="form-label">Taxable Income:</label>
+                        <input type="text" class="form-control" name="taxable_income" id="taxable_income"
+                            disabled>
+                    </div> -->
+                    <!-- <div class="form-group col-sm-3">
+                        <label for="" class="form-label">Total Pay:</label>
+                        <input type="text" class="form-control" name="taxable_income" id="net"
+                            readonly>
+                    </div> -->
+
+                    <div class="form-group col-sm-6">
+                        <label for="" class="form-label">Net Pay:</label>
+                        <input type="text" class="form-control" name="net_pay" id="net_pay" disabled>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit">Confirm</button>
+            </div>
+        </div>
+    </div>
+    </form>
+
+</div>
+</div>
+</div>
+
+<!-- {% load static %}
+<script src="{% static 'employees.js' %}"></script> -->
+
+<script>
+    $(document).ready(function() {
+
+        
+        function calculateTax_semimontly(taxableIncome) {
+            const taxRates = [
+              { min: 0, max: 10417, fixed_tax: 0, percent_excess: 0 },
+              { min: 10418, max: 16666, fixed_tax: 0, percent_excess: 0.15 },
+              { min: 16667, max: 33332, fixed_tax: 937.50, percent_excess: 0.20 },
+              { min: 33333, max: 83332, fixed_tax: 4270.70, percent_excess: 0.25 },
+              { min: 83333, max: 333332, fixed_tax: 16770.70, percent_excess: 0.30 },
+              { min: 333333, max: Infinity, fixed_tax: 91770.70, percent_excess: 0.35 }
+            ];
+          
+            let tax = 0;
+            let level = 0;
+            for (let i = 0; i < taxRates.length; i++) {
+              if (taxableIncome <= taxRates[i].max && taxableIncome >= taxRates[i].min) {
+                level = i;
+                break;
+              }
+            }
+            let target_rate = taxRates[level];
+            tax = target_rate.fixed_tax + ((taxableIncome - target_rate.min) * target_rate.percent_excess)
+            return tax;
+          }
+          
+        // console.log(calculateTax_semimontly(45554));
+        function compute_taxableIncome(){
+            var form = $("#form_submit_payroll")
+            var pagibig_contrib = parseFloat(form.find("input[name='pagibig_contrib']").val())
+            var sss_contrib = parseFloat(form.find("input[name='sss_contrib']").val())
+            var philhealth_contrib = parseFloat(form.find("input[name='philhealth_contrib']").val())
+            var semimonthly_rate = $("#semimonthly_rate").val().replace(",", "")
+            var total_contribution = sss_contrib + philhealth_contrib + pagibig_contrib
+            console.log(semimonthly_rate)
+            var taxable_income = semimonthly_rate - total_contribution
+            return taxable_income
+
+
+            // $("#net_pay").val(new Intl.NumberFormat().format(net_pay))
+        }
+        function compute_netPay(){
+            var gross_pay = $("#gross_pay").val().replace(",", "")
+            var total_deductions= $("#total_deductions").val().replace(",", "")
+
+            var net_pay= gross_pay - total_deductions
+            // console.log(gross_pay + "and" + total_deductions)
+            // console.log(net_pay)
+            $("#net_pay").val(new Intl.NumberFormat().format(net_pay))
+        }
+        function compute_incomeTax(){
+            var taxable_income = parseFloat(compute_taxableIncome())
+            // console.log("ti: " +taxable_income)
+            // $("#taxable_income").val(new Intl.NumberFormat().format(taxable_income))
+            var income_tax = parseFloat(calculateTax_semimontly(taxable_income))
+            $("#id_income_tax").val(new Intl.NumberFormat().format(income_tax))
+   
+            compute_netPay()
+        }
+
+        $(".earnings").change(function(){
+            compute_total(className = ".earnings", target = "#gross_pay")
+        });
+        $(".deductions").change(function(){
+            compute_total(className = ".deductions", target = "#total_deductions")
+        });
+        function compute_total(className, target){
+            compute_incomeTax()
+            var input = $(className)
+            var total = 0;
+            for(var i = 0; i < input.length; i++){
+
+                input_val = $(input[i]).val()
+                if(input_val.includes(",")){
+                    input_val = input_val.replace(",","")
+                }
+                total   += parseFloat(input_val)
+            } 
+            $(target).val(new Intl.NumberFormat().format(total))
+            compute_netPay()
+
+            // compute_taxableIncome()
+            // create_payroll()
+        }
+
+        //console.log(current_date)
+        $("#table_records").on('click', '.btn_submit_payroll', function(event) {
+            event.preventDefault()
+            var employee_id = $(this).data('id')
+            var row = $(this).closest('tr').find('td');
+            var rec = {};
+            $('#modal_submit_payroll').modal('show');
+            console.log(row.find('.employee_position').text())
+            $.each(row, function(index, td) {
+                var className = String($(td).attr('class')).replace(/\s/g, "");
+                $("#form_submit_payroll").find(`input[name=${className}]`).val($(td).text())
+                $("#form_submit_payroll").find(`select[name=${className}]`).val($(td).text())
+
+                rec[className] = $(td).text();
+            });
+
+            $("#form_submit_payroll").find("input[name='employee_id']").val(employee_id)
+        })
+        $("#form_submit_payroll").submit(function(event) {
+            event.preventDefault()
+            var form = $(this)
+            form.find('input').each(function() {
+                var value = $(this).val();
+                if (value.indexOf(',')!== -1) {
+                    $(this).val(value.replace(',', ''));
+                }
+            });
+            var formData = new FormData(form[0])
+            var date_year = $("#id_date_year").val()
+            var month_half = $("#id_month_half").val()
+            formData.append('date_year', date_year)
+            formData.append('month_half', month_half)
+            console.log(...formData)
+            // $.each(formData, function (ind, items) { 
+            //      console.log(ind, items)
+            // });
+            var employee_id = formData.get("employee_id")
+            $.ajax({
+                type: "POST",
+                url: `/hr/payroll/submit/${employee_id}/`,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response)
+                    $("#form_search").trigger('submit')
+                    form.trigger('reset')
+                    $('.modal').modal('hide')
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    console.log(xhr, status, error);
+                }
+            });
+        })
+
+
+
+        const employees_table = new DataTable("#table_records", {
+            autoTableLayout: true,
+            // autoWidth: true,
+            ordering: false,
+            language: {
+                error: function(errors, settings, techNote, table) {
+                    // Display the error message
+                    console.log(errors);
+                }
+            },
+            columnDefs: [{
+                    className: 'dv_user_id',
+                    targets: [0],
+                },
+                {
+                    className: 'employee_position',
+                    targets: [1],
+                },
+                {
+                    className: 'employee_name',
+                    targets: [2],
+                },
+                {
+                    className: 'semimonthly_rate',
+                    targets: [3],
+                },
+                {
+                    className: 'num_present_days',
+                    targets: [4]
+                },
+                {
+                    className: 'basic_pay',
+                    targets: [5]
+                },
+                {
+                    className: 'meal_allowance',
+                    targets: [6]
+                },
+                {
+                    className: 'weekend_work_hr',
+                    targets: [7]
+                },
+                {
+                    className: 'weekend_pay',
+                    targets: [8]
+                },
+                {
+                    className: 'num_overtime_hr',
+                    targets: [9]
+                },
+                {
+                    className: 'overtime_pay',
+                    targets: [10]
+                },
+                {
+                    className: 'num_tardinesstime_min',
+                    targets: [11]
+                },
+                {
+                    className: 'tardiness_deduct',
+                    targets: [12]
+                },
+                {
+                    className: 'num_undertime_hr',
+                    targets: [13]
+                },
+                {
+                    className: 'undertime_deduct',
+                    targets: [14]
+                },
+
+            ],
+            createdRow: function(row, data, index) {
+                $(row).attr('data-id', data.id);
+            },
+        });
+        $("#table_records").on('click', '.btn_submit_payroll', function(event) {
+            event.preventDefault()
+            var form = $("#form_submit_payroll")
+            // $(".resetable").val(0)
+            form.find(".resetable").val(0)
+
+            // form.trigger("reset")
+            var id = $(this).data('id')
+            var row = $(this).closest('tr').find('td');
+            compute_total(className = ".earnings", target = "#gross_pay")
+            compute_total(className = ".deductions", target = "#total_deductions")
+
+            $('#modal_submit_payroll').modal('show');
+
+            $.each(row, function(index, td) {
+                var className = String($(td).attr('class')).replace(/\s/g, "");
+                form.find(`input[name=${className}]`).val($(td).text())
+                form.find(`select[name=${className}]`).val($(td).text())
+
+            });
+        })
+        $("#form_search").submit(function(event) {
+            event.preventDefault()
+            var form = $(this)
+            var formData = new FormData(form[0])
+            employees_table.clear()
+
+            $.ajax({
+                type: "POST",
+                url: "/hr/salary/",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    console.log(response)
+                    var records = response.records
+                    employees_table.draw()
+                    $.each(records, function(id, element) {
+                        employees_table.row.add([
+                            `${element.employee_info.dv_user_id}`,
+                            element.employee_info.position,
+                            `${element.employee_info.last_name}, ${element.employee_info.first_name}, ${element.employee_info.middle_name}`,
+                            new Intl.NumberFormat().format(element.semimonthly_rate),
+                            element.num_present_days,
+                            new Intl.NumberFormat().format(element.basic_pay),
+                            new Intl.NumberFormat().format(element.meal_allowance),
+                            element.weekend_work_hr,
+                            new Intl.NumberFormat().format(element.weekend_pay),
+                            element.num_overtime,
+                            new Intl.NumberFormat().format(element.overtime_pay),
+                            element.num_tardinesstime,
+                            new Intl.NumberFormat().format(element.tardiness_deduct),
+                            element.num_undertime_hr,
+                            new Intl.NumberFormat().format(element.undertime_deduct),
+                            `<button class="btn btn-primary btn_submit_payroll" type="button" data-id="${element.employee_info.id}">Submit Payroll</button>`
+
+                        ]).draw()
+                    });
+                    // employees_table.row.add[
+                    //     ''
+                    // ].draw()
+                }
+            });
+
+        })
+        $("#form_search").trigger('submit')
+
+
+        $("#table_records").on('click', '.btn_edit', function(event) {
+            event.preventDefault();
+            var id = $(this).data('id')
+            var modal_edit = $("#modal_edit")
+            $.ajax({
+                type: "GET",
+                url: "/biometrics/employees/fetch/" + id,
+                success: function(response) {
+                    console.log(response)
+                    const keys = Object.keys(response);
+                    keys.sort();
+
+                    for (const key of keys) {
+                        modal_edit.find(`input[name='${key}']`).val(response[key])
+                        modal_edit.find(`select[name='${key}']`).val(response[key])
+
+                        // console.log(`${key}: ${response[key]}`);
+                    }
+                    // console.log(response[0].fields)
+                    // console.log(response['fields'])
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    console.log(xhr, status, error);
+                }
+            })
+            modal_edit.modal('show')
+        })
+        $("#form_edit").submit(function(event) {
+            event.preventDefault()
+            var form = $(this)
+            var formData = new FormData(form[0])
+            var id = formData.get("id")
+            $.ajax({
+                type: "POST",
+                url: `/biometrics/employees/update/${id}/`,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response)
+                    employees_table.ajax.reload()
+                    form.trigger("reset")
+                    $('.modal').modal('hide')
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    console.log(xhr, status, error);
+                }
+            });
+        })
+
+    });
+</script>
+
+{% endblock %}
