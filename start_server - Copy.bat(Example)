@@ -1,7 +1,7 @@
 @REM remove the '(examaple)'
 @REM change the URL based on the URL you are using
-@REM make sure to create a virtual environment named "venv" using the "requirements.txt". If your virtual environment name is different, change the "venv" t
-erm in the "call" function below with the right name.
+@REM make sure to create a virtual environment named 'venv' using the 'requirements.txt'. 
+@REM If your virtual environment name is different (not 'venv'), change the 'venv' term in the 'call' function below with the right name.
 
 @echo off
 call venv\Scripts\activate
